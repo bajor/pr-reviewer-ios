@@ -1,0 +1,636 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10000000000000000000001 /* PRReviewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* PRReviewerApp.swift */; };
+		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* ContentView.swift */; };
+		A10000000000000000000003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* Assets.xcassets */; };
+		A10000000000000000000050 /* GFMParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000050 /* GFMParser.swift */; };
+		A10000000000000000000051 /* GFMView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000051 /* GFMView.swift */; };
+		C10000000000000000000001 /* DiffParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000001 /* DiffParserTests.swift */; };
+		C10000000000000000000002 /* GFMParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000002 /* GFMParserTests.swift */; };
+		A10000000000000000000010 /* PullRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* PullRequest.swift */; };
+		A10000000000000000000011 /* PRFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* PRFile.swift */; };
+		A10000000000000000000012 /* PRComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* PRComment.swift */; };
+		A10000000000000000000013 /* DiffModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000013 /* DiffModels.swift */; };
+		A10000000000000000000014 /* PRState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* PRState.swift */; };
+		A10000000000000000000015 /* ReviewThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000015 /* ReviewThread.swift */; };
+		A10000000000000000000020 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000020 /* KeychainManager.swift */; };
+		A10000000000000000000021 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000021 /* SettingsManager.swift */; };
+		A10000000000000000000022 /* GitHubAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000022 /* GitHubAPI.swift */; };
+		A10000000000000000000023 /* DiffParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000023 /* DiffParser.swift */; };
+		A10000000000000000000024 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000024 /* NotificationManager.swift */; };
+		A10000000000000000000025 /* RefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000025 /* RefreshManager.swift */; };
+		A10000000000000000000026 /* PRCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000026 /* PRCacheService.swift */; };
+		A10000000000000000000027 /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000027 /* AccountManager.swift */; };
+		A10000000000000000000030 /* PRListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000030 /* PRListViewModel.swift */; };
+		A10000000000000000000031 /* PRDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000031 /* PRDetailViewModel.swift */; };
+		A10000000000000000000033 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000033 /* SettingsViewModel.swift */; };
+		A10000000000000000000040 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000040 /* SettingsView.swift */; };
+		A10000000000000000000041 /* PRListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000041 /* PRListView.swift */; };
+		A10000000000000000000042 /* PRPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000042 /* PRPageView.swift */; };
+		A10000000000000000000043 /* PRDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000043 /* PRDetailView.swift */; };
+		A10000000000000000000044 /* DiffView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000044 /* DiffView.swift */; };
+		A10000000000000000000045 /* DiffLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000045 /* DiffLineView.swift */; };
+		A10000000000000000000046 /* NavigationButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000046 /* NavigationButtonsView.swift */; };
+		A10000000000000000000048 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000048 /* Colors.swift */; };
+		A10000000000000000000016 /* NotificationHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* NotificationHistory.swift */; };
+		A10000000000000000000049 /* NotificationHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000049 /* NotificationHistoryView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		E20000000000000000000001 /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
+		A20000000000000000000001 /* PRReviewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRReviewerApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A20000000000000000000010 /* PullRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PullRequest.swift; sourceTree = "<group>"; };
+		A20000000000000000000011 /* PRFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRFile.swift; sourceTree = "<group>"; };
+		A20000000000000000000012 /* PRComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRComment.swift; sourceTree = "<group>"; };
+		A20000000000000000000013 /* DiffModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffModels.swift; sourceTree = "<group>"; };
+		A20000000000000000000014 /* PRState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRState.swift; sourceTree = "<group>"; };
+		A20000000000000000000015 /* ReviewThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewThread.swift; sourceTree = "<group>"; };
+		A20000000000000000000016 /* NotificationHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHistory.swift; sourceTree = "<group>"; };
+		A20000000000000000000020 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		A20000000000000000000021 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		A20000000000000000000022 /* GitHubAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubAPI.swift; sourceTree = "<group>"; };
+		A20000000000000000000023 /* DiffParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffParser.swift; sourceTree = "<group>"; };
+		A20000000000000000000024 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		A20000000000000000000025 /* RefreshManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshManager.swift; sourceTree = "<group>"; };
+		A20000000000000000000026 /* PRCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRCacheService.swift; sourceTree = "<group>"; };
+		A20000000000000000000027 /* AccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
+		A20000000000000000000030 /* PRListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRListViewModel.swift; sourceTree = "<group>"; };
+		A20000000000000000000031 /* PRDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDetailViewModel.swift; sourceTree = "<group>"; };
+		A20000000000000000000033 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		A20000000000000000000040 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A20000000000000000000041 /* PRListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRListView.swift; sourceTree = "<group>"; };
+		A20000000000000000000042 /* PRPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPageView.swift; sourceTree = "<group>"; };
+		A20000000000000000000043 /* PRDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDetailView.swift; sourceTree = "<group>"; };
+		A20000000000000000000044 /* DiffView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffView.swift; sourceTree = "<group>"; };
+		A20000000000000000000045 /* DiffLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffLineView.swift; sourceTree = "<group>"; };
+		A20000000000000000000046 /* NavigationButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationButtonsView.swift; sourceTree = "<group>"; };
+		A20000000000000000000048 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		A20000000000000000000049 /* NotificationHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHistoryView.swift; sourceTree = "<group>"; };
+		A20000000000000000000050 /* GFMParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GFMParser.swift; sourceTree = "<group>"; };
+		A20000000000000000000051 /* GFMView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GFMView.swift; sourceTree = "<group>"; };
+		A30000000000000000000001 /* PRReviewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PRReviewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C20000000000000000000001 /* DiffParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffParserTests.swift; sourceTree = "<group>"; };
+		C20000000000000000000002 /* GFMParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GFMParserTests.swift; sourceTree = "<group>"; };
+		C30000000000000000000001 /* PRReviewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PRReviewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A40000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C40000000000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A50000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				E50000000000000000000001 /* Config */,
+				A50000000000000000000002 /* PRReviewer */,
+				C50000000000000000000001 /* PRReviewerTests */,
+				A50000000000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E50000000000000000000001 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				E20000000000000000000001 /* Local.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000002 /* PRReviewer */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* PRReviewerApp.swift */,
+				A20000000000000000000002 /* ContentView.swift */,
+				A50000000000000000000010 /* Models */,
+				A50000000000000000000020 /* Services */,
+				A50000000000000000000030 /* ViewModels */,
+				A50000000000000000000040 /* Views */,
+				A50000000000000000000050 /* Resources */,
+			);
+			path = PRReviewer;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A30000000000000000000001 /* PRReviewer.app */,
+				C30000000000000000000001 /* PRReviewerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C50000000000000000000001 /* PRReviewerTests */ = {
+			isa = PBXGroup;
+			children = (
+				C20000000000000000000001 /* DiffParserTests.swift */,
+				C20000000000000000000002 /* GFMParserTests.swift */,
+			);
+			path = PRReviewerTests;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000010 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000010 /* PullRequest.swift */,
+				A20000000000000000000011 /* PRFile.swift */,
+				A20000000000000000000012 /* PRComment.swift */,
+				A20000000000000000000013 /* DiffModels.swift */,
+				A20000000000000000000014 /* PRState.swift */,
+				A20000000000000000000015 /* ReviewThread.swift */,
+				A20000000000000000000016 /* NotificationHistory.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000020 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000020 /* KeychainManager.swift */,
+				A20000000000000000000021 /* SettingsManager.swift */,
+				A20000000000000000000022 /* GitHubAPI.swift */,
+				A20000000000000000000023 /* DiffParser.swift */,
+				A20000000000000000000024 /* NotificationManager.swift */,
+				A20000000000000000000025 /* RefreshManager.swift */,
+				A20000000000000000000026 /* PRCacheService.swift */,
+				A20000000000000000000027 /* AccountManager.swift */,
+				A20000000000000000000050 /* GFMParser.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000030 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000030 /* PRListViewModel.swift */,
+				A20000000000000000000031 /* PRDetailViewModel.swift */,
+				A20000000000000000000033 /* SettingsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000040 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000040 /* SettingsView.swift */,
+				A20000000000000000000041 /* PRListView.swift */,
+				A20000000000000000000042 /* PRPageView.swift */,
+				A20000000000000000000043 /* PRDetailView.swift */,
+				A20000000000000000000044 /* DiffView.swift */,
+				A20000000000000000000045 /* DiffLineView.swift */,
+				A20000000000000000000046 /* NavigationButtonsView.swift */,
+				A20000000000000000000048 /* Colors.swift */,
+				A20000000000000000000049 /* NotificationHistoryView.swift */,
+				A20000000000000000000051 /* GFMView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A50000000000000000000050 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000003 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXContainerItemProxy section */
+		C60000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A90000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A60000000000000000000001;
+			remoteInfo = PRReviewer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXNativeTarget section */
+		A60000000000000000000001 /* PRReviewer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A80000000000000000000001 /* Build configuration list for PBXNativeTarget "PRReviewer" */;
+			buildPhases = (
+				A70000000000000000000001 /* Sources */,
+				A40000000000000000000001 /* Frameworks */,
+				A70000000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PRReviewer;
+			productName = PRReviewer;
+			productReference = A30000000000000000000001 /* PRReviewer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C60000000000000000000002 /* PRReviewerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C80000000000000000000001 /* Build configuration list for PBXNativeTarget "PRReviewerTests" */;
+			buildPhases = (
+				C70000000000000000000001 /* Sources */,
+				C40000000000000000000001 /* Frameworks */,
+				C70000000000000000000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C60000000000000000000003 /* PBXTargetDependency */,
+			);
+			name = PRReviewerTests;
+			productName = PRReviewerTests;
+			productReference = C30000000000000000000001 /* PRReviewerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXTargetDependency section */
+		C60000000000000000000003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A60000000000000000000001 /* PRReviewer */;
+			targetProxy = C60000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXProject section */
+		A90000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A60000000000000000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A80000000000000000000002 /* Build configuration list for PBXProject "PRReviewer" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A50000000000000000000001;
+			productRefGroup = A50000000000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A60000000000000000000001 /* PRReviewer */,
+				C60000000000000000000002 /* PRReviewerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A70000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000003 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C70000000000000000000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000001 /* PRReviewerApp.swift in Sources */,
+				A10000000000000000000002 /* ContentView.swift in Sources */,
+				A10000000000000000000010 /* PullRequest.swift in Sources */,
+				A10000000000000000000011 /* PRFile.swift in Sources */,
+				A10000000000000000000012 /* PRComment.swift in Sources */,
+				A10000000000000000000013 /* DiffModels.swift in Sources */,
+				A10000000000000000000014 /* PRState.swift in Sources */,
+				A10000000000000000000015 /* ReviewThread.swift in Sources */,
+				A10000000000000000000020 /* KeychainManager.swift in Sources */,
+				A10000000000000000000021 /* SettingsManager.swift in Sources */,
+				A10000000000000000000022 /* GitHubAPI.swift in Sources */,
+				A10000000000000000000023 /* DiffParser.swift in Sources */,
+				A10000000000000000000024 /* NotificationManager.swift in Sources */,
+				A10000000000000000000025 /* RefreshManager.swift in Sources */,
+				A10000000000000000000026 /* PRCacheService.swift in Sources */,
+				A10000000000000000000027 /* AccountManager.swift in Sources */,
+				A10000000000000000000030 /* PRListViewModel.swift in Sources */,
+				A10000000000000000000031 /* PRDetailViewModel.swift in Sources */,
+				A10000000000000000000033 /* SettingsViewModel.swift in Sources */,
+				A10000000000000000000040 /* SettingsView.swift in Sources */,
+				A10000000000000000000041 /* PRListView.swift in Sources */,
+				A10000000000000000000042 /* PRPageView.swift in Sources */,
+				A10000000000000000000043 /* PRDetailView.swift in Sources */,
+				A10000000000000000000044 /* DiffView.swift in Sources */,
+				A10000000000000000000045 /* DiffLineView.swift in Sources */,
+				A10000000000000000000046 /* NavigationButtonsView.swift in Sources */,
+				A10000000000000000000048 /* Colors.swift in Sources */,
+				A10000000000000000000016 /* NotificationHistory.swift in Sources */,
+				A10000000000000000000049 /* NotificationHistoryView.swift in Sources */,
+				A10000000000000000000050 /* GFMParser.swift in Sources */,
+				A10000000000000000000051 /* GFMView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C70000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C10000000000000000000001 /* DiffParserTests.swift in Sources */,
+				C10000000000000000000002 /* GFMParserTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		B10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		B10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B10000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E20000000000000000000001 /* Local.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "PR Reviewer";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prreviewer.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B10000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E20000000000000000000001 /* Local.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "PR Reviewer";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prreviewer.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		D10000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E20000000000000000000001 /* Local.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prreviewer.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PRReviewer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PRReviewer";
+			};
+			name = Debug;
+		};
+		D10000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E20000000000000000000001 /* Local.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prreviewer.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PRReviewer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PRReviewer";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A80000000000000000000001 /* Build configuration list for PBXNativeTarget "PRReviewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000003 /* Debug */,
+				B10000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A80000000000000000000002 /* Build configuration list for PBXProject "PRReviewer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B10000000000000000000001 /* Debug */,
+				B10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C80000000000000000000001 /* Build configuration list for PBXNativeTarget "PRReviewerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D10000000000000000000001 /* Debug */,
+				D10000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A90000000000000000000001 /* Project object */;
+}
