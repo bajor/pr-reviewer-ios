@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  apple-id-scan:
+    name: Apple Team/Developer ID Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for Apple Team ID and Developer ID
+        run: |
+          echo "Scanning for Apple Team ID and Developer ID..."
+          FOUND_APPLE_ID=0
+
+          # Apple Team IDs are 10-character alphanumeric strings (e.g., ABC1234DEF)
+          # They appear in various places in Xcode projects and signing configs
+
+          # Patterns to search for
+          declare -A PATTERNS
+          PATTERNS["DEVELOPMENT_TEAM"]='DEVELOPMENT_TEAM\s*=\s*[A-Z0-9]{10}'
+          PATTERNS["TeamIdentifier"]='<key>com\.apple\.developer\.team-identifier</key>\s*<string>[A-Z0-9]{10}</string>'
+          PATTERNS["TeamID in plist"]='<key>TeamID</key>\s*<string>[A-Z0-9]{10}</string>'
+          PATTERNS["CODE_SIGN_IDENTITY with ID"]='CODE_SIGN_IDENTITY.*Developer ID'
+          PATTERNS["Signing Team"]='PROVISIONING_PROFILE_SPECIFIER.*=.*[A-Z0-9]{10}'
+          PATTERNS["Apple ID in xcconfig"]='^[A-Z_]*TEAM[A-Z_]*\s*=\s*[A-Z0-9]{10}'
+
+          for pattern_name in "${!PATTERNS[@]}"; do
+            echo "Checking for: $pattern_name"
+            MATCHES=$(grep -rPn "${PATTERNS[$pattern_name]}" \
+              --include="*.pbxproj" --include="*.xcconfig" --include="*.plist" \
+              --include="*.entitlements" --include="*.swift" --include="*.m" \
+              --include="*.h" --include="*.json" --include="*.yml" --include="*.yaml" \
+              . 2>/dev/null || true)
+
+            if [ -n "$MATCHES" ]; then
+              echo "::error::Found potential Apple ID pattern ($pattern_name):"
+              echo "$MATCHES" | head -10
+              FOUND_APPLE_ID=1
+            fi
+          done
+
+          # Also do a general search for 10-char Team ID patterns in signing contexts
+          echo "Checking for generic Team ID patterns..."
+          TEAM_ID_MATCHES=$(grep -rPn '(?i)(team|signing|developer|provision)[^=]*=\s*"?[A-Z0-9]{10}"?' \
+            --include="*.pbxproj" --include="*.xcconfig" --include="*.plist" \
+            --include="*.entitlements" --include="*.json" \
+            . 2>/dev/null | grep -v -E '(example|placeholder|YOUR_TEAM|XXXXXXXXXX)' || true)
+
+          if [ -n "$TEAM_ID_MATCHES" ]; then
+            echo "::error::Found potential Team ID in signing config:"
+            echo "$TEAM_ID_MATCHES" | head -10
+            FOUND_APPLE_ID=1
+          fi
+
+          if [ "$FOUND_APPLE_ID" -eq 1 ]; then
+            echo "::error::Apple Team ID or Developer ID detected!"
+            echo "Please remove Apple IDs before committing."
+            echo "Use placeholder values like 'YOUR_TEAM_ID' or ensure signing config is gitignored."
+            exit 1
+          fi
+          echo "No Apple Team ID or Developer ID found"
+
+  build:
+    needs: apple-id-scan
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Periphery
+        run: brew install periphery
+
+      - name: Run Periphery
+        run: periphery scan --project PRReviewer.xcodeproj --schemes PRReviewer
+
+      - name: Build for simulator
+        run: make simulator

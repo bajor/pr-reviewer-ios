@@ -1,0 +1,18 @@
+// =============================================================================
+// Local Configuration Template
+// =============================================================================
+//
+// SETUP INSTRUCTIONS:
+// 1. Copy this file to Local.xcconfig (same directory)
+// 2. Replace YOUR_TEAM_ID_HERE with your Apple Developer Team ID
+// 3. Build the project normally
+//
+// To find your Team ID:
+// - Open Xcode > Settings > Accounts
+// - Select your Apple ID, look at the Team column
+// - Or check Apple Developer Portal > Membership
+//
+// Note: Local.xcconfig is git-ignored and will not be committed.
+// =============================================================================
+
+DEVELOPMENT_TEAM = YOUR_TEAM_ID_HERE
