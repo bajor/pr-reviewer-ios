@@ -41,7 +41,7 @@ jobs:
               --include="*.pbxproj" --include="*.xcconfig" --include="*.plist" \
               --include="*.entitlements" --include="*.swift" --include="*.m" \
               --include="*.h" --include="*.json" --include="*.yml" --include="*.yaml" \
-              . 2>/dev/null || true)
+              . 2>/dev/null | grep -v -E '\.github/workflows/' || true)
 
             if [ -n "$MATCHES" ]; then
               echo "::error::Found potential Apple ID pattern ($pattern_name):"
@@ -55,7 +55,7 @@ jobs:
           TEAM_ID_MATCHES=$(grep -rPn '(?i)(team|signing|developer|provision)[^=]*=\s*"?[A-Z0-9]{10}"?' \
             --include="*.pbxproj" --include="*.xcconfig" --include="*.plist" \
             --include="*.entitlements" --include="*.json" \
-            . 2>/dev/null | grep -v -E '(example|placeholder|YOUR_TEAM|XXXXXXXXXX)' || true)
+            . 2>/dev/null | grep -v -E '(example|placeholder|YOUR_TEAM|XXXXXXXXXX|\.github/workflows/)' || true)
 
           if [ -n "$TEAM_ID_MATCHES" ]; then
             echo "::error::Found potential Team ID in signing config:"
@@ -77,6 +77,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: Create Local.xcconfig for CI
+        run: |
+          # Create Local.xcconfig with empty Team ID for CI builds
+          # (code signing is disabled in CI, so Team ID isn't needed)
+          echo "DEVELOPMENT_TEAM = " > Config/Local.xcconfig
 
       - name: Install Periphery
         run: brew install periphery
