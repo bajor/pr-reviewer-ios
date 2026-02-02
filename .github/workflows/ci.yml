@@ -78,6 +78,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create Local.xcconfig for CI
+        run: |
+          # Create Local.xcconfig with empty Team ID for CI builds
+          # (code signing is disabled in CI, so Team ID isn't needed)
+          echo "DEVELOPMENT_TEAM = " > Config/Local.xcconfig
+
       - name: Install Periphery
         run: brew install periphery
 
