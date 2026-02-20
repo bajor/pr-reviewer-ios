@@ -1,6 +1,6 @@
-# PR Reviewer - iPhone 13 Mini
+# PR Reviewer
 
-Personal-use iOS app for reviewing GitHub Pull Requests on iPhone 13 Mini.
+Personal-use iOS app for reviewing GitHub Pull Requests.
 
 ## Features
 
@@ -24,7 +24,7 @@ Personal-use iOS app for reviewing GitHub Pull Requests on iPhone 13 Mini.
 
 - macOS with Xcode 15+
 - Apple ID (free account works)
-- iPhone 13 Mini with iOS 17+
+- phone with iOS 17+
 - USB cable (Lightning or USB-C depending on your Mac)
 
 ## Build & Install Instructions
