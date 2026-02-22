@@ -74,6 +74,7 @@ class PRDetailViewModel: ObservableObject {
     private let api = GitHubAPI()
     private let settings = SettingsManager.shared
     private let cache = PRCacheService.shared
+    private let diskCache = PRDiskCache.shared
 
     private var navigableItems: [NavigableItem] = []
 
@@ -106,19 +107,25 @@ class PRDetailViewModel: ObservableObject {
         }
     }
 
-    /// Load PR details, using cache if available
+    /// Load PR details, checking in-memory cache, then disk cache, then network
     func loadDetails() async {
-        // Skip if already loaded
         guard !isLoaded else { return }
 
-        // Check cache first
+        // L1: in-memory cache
         if let cached = await cache.getPRDetails(for: pullRequest.id) {
             applyPRDetails(cached)
             isLoaded = true
             return
         }
 
-        // Cache miss - fetch from network
+        // L2: disk cache
+        if let snapshot = await diskCache.loadSnapshot(for: pullRequest.id) {
+            applySnapshot(snapshot)
+            isLoaded = true
+            return
+        }
+
+        // L3: network
         await loadDetailsFromNetwork()
     }
 
@@ -181,6 +188,22 @@ class PRDetailViewModel: ObservableObject {
                 branchComparison: self.branchComparison
             )
             await cache.setPRDetails(details, for: pullRequest.id)
+
+            // Save to disk for fast future launches
+            let snapshot = PRSnapshot(
+                pullRequest: pullRequest,
+                fileDiffs: self.fileDiffs,
+                comments: self.comments,
+                issueComments: self.issueComments,
+                reviewThreads: self.reviewThreads,
+                minimizedCommentIds: self.minimizedCommentIds,
+                checkRunsStatus: self.checkRunsStatus,
+                branchComparison: self.branchComparison,
+                headSHA: pullRequest.head.sha,
+                savedAt: Date()
+            )
+            try? await diskCache.saveSnapshot(snapshot, for: pullRequest.id)
+
             isLoaded = true
 
         } catch {
@@ -221,6 +244,19 @@ class PRDetailViewModel: ObservableObject {
         self.branchComparison = details.branchComparison
         self.navigableItems = buildNavigableItems()
         self.currentItemIndex = 0
+    }
+
+    /// Apply a disk-cached snapshot to view model
+    private func applySnapshot(_ snapshot: PRSnapshot) {
+        self.fileDiffs = snapshot.fileDiffs
+        self.comments = snapshot.comments
+        self.issueComments = snapshot.issueComments
+        self.reviewThreads = snapshot.reviewThreads
+        self.minimizedCommentIds = snapshot.minimizedCommentIds
+        self.checkRunsStatus = snapshot.checkRunsStatus
+        self.branchComparison = snapshot.branchComparison
+        self.navigableItems = buildNavigableItems()
+        self.currentItemIndex = min(self.currentItemIndex, max(0, navigableItems.count - 1))
     }
 
     private func filterActiveComments(_ comments: [PRComment]) -> [PRComment] {
