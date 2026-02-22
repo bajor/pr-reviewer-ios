@@ -703,7 +703,7 @@ struct PRMergeability: Sendable {
 }
 
 /// GitHub Actions check runs status summary
-struct CheckRunsStatus: Sendable {
+struct CheckRunsStatus: Sendable, Codable {
     let total: Int
     let completed: Int
     let successful: Int
@@ -718,7 +718,7 @@ struct CheckRunsStatus: Sendable {
         return .pending
     }
 
-    enum CheckStatus {
+    enum CheckStatus: String, Codable {
         case none
         case pending
         case passed
@@ -745,7 +745,7 @@ struct CheckRunsStatus: Sendable {
 }
 
 /// Branch comparison result
-struct BranchComparison: Sendable {
+struct BranchComparison: Sendable, Codable {
     let status: String  // ahead, behind, diverged, identical
     let aheadBy: Int
     let behindBy: Int

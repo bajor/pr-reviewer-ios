@@ -1,19 +1,23 @@
 import Foundation
 import SwiftUI
 
-enum DiffLineType: Equatable, Hashable, Sendable {
+enum DiffLineType: String, Codable, Equatable, Hashable, Sendable {
     case addition
     case deletion
     case context
     case hunkHeader
 }
 
-struct DiffLine: Identifiable, Equatable, Sendable {
+struct DiffLine: Identifiable, Equatable, Sendable, Codable {
     let id = UUID()
     let type: DiffLineType
     let content: String
     let oldLineNumber: Int?
     let newLineNumber: Int?
+
+    private enum CodingKeys: String, CodingKey {
+        case type, content, oldLineNumber, newLineNumber
+    }
 
     var backgroundColor: Color {
         switch type {
@@ -31,7 +35,7 @@ struct DiffLine: Identifiable, Equatable, Sendable {
     }
 }
 
-struct DiffHunk: Identifiable, Equatable, Sendable {
+struct DiffHunk: Identifiable, Equatable, Sendable, Codable {
     let id = UUID()
     let header: String
     let oldStart: Int
@@ -39,13 +43,21 @@ struct DiffHunk: Identifiable, Equatable, Sendable {
     let newStart: Int
     let newCount: Int
     let lines: [DiffLine]
+
+    private enum CodingKeys: String, CodingKey {
+        case header, oldStart, oldCount, newStart, newCount, lines
+    }
 }
 
-struct FileDiff: Identifiable, Equatable, Sendable {
+struct FileDiff: Identifiable, Equatable, Sendable, Codable {
     let id = UUID()
     let filename: String
     let status: FileStatus
     let hunks: [DiffHunk]
     let additions: Int
     let deletions: Int
+
+    private enum CodingKeys: String, CodingKey {
+        case filename, status, hunks, additions, deletions
+    }
 }
