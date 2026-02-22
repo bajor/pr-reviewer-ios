@@ -13,6 +13,7 @@ class PRListViewModel: ObservableObject {
     private let refreshManager = RefreshManager.shared
     private let changeDetector = ChangeDetector()
     private let cache = PRCacheService.shared
+    private let diskCache = PRDiskCache.shared
 
     func startMonitoring() {
         refreshManager.startAutoRefresh { [weak self] in
@@ -35,17 +36,26 @@ class PRListViewModel: ObservableObject {
             return
         }
 
-        // Check cache first (unless forcing refresh)
+        // L1: in-memory cache (unless forcing refresh)
         if !forceRefresh, let cached = await cache.getPRList() {
             self.pullRequests = cached
-            // Still run change detection in background (doesn't block UI)
             Task {
                 await changeDetector.checkForChanges(pullRequests: cached)
             }
             return
         }
 
-        isLoading = true
+        // L2: disk cache (unless forcing refresh)
+        if !forceRefresh, let diskCached = await diskCache.loadPRList() {
+            self.pullRequests = diskCached
+            updateAppBadge(count: diskCached.count)
+            Task {
+                await changeDetector.checkForChanges(pullRequests: diskCached)
+            }
+            // Don't return - still fetch from network in background below
+        }
+
+        isLoading = pullRequests.isEmpty
         error = nil
 
         var allPRs: [PullRequest] = []
@@ -74,8 +84,9 @@ class PRListViewModel: ObservableObject {
             return true
         }.sorted { $0.updatedAt > $1.updatedAt }
 
-        // Update cache
+        // Update caches
         await cache.setPRList(pullRequests)
+        try? await diskCache.savePRList(pullRequests)
 
         // Update app badge
         updateAppBadge(count: pullRequests.count)
@@ -83,18 +94,15 @@ class PRListViewModel: ObservableObject {
         // Check for changes and send notifications
         await changeDetector.checkForChanges(pullRequests: pullRequests)
 
+        // Clean up disk data for closed PRs
+        let openIds = Set(pullRequests.map(\.id))
+        try? await diskCache.cleanupClosedPRs(openPRIds: openIds)
+
         if !errors.isEmpty && pullRequests.isEmpty {
             self.error = errors.joined(separator: "\n")
         }
 
         isLoading = false
-    }
-
-    /// Force a full refresh, bypassing all caches
-    func forceRefreshAll() async {
-        await cache.invalidatePRList()
-        await cache.invalidateAllPRDetails()
-        await refreshAll(forceRefresh: true)
     }
 
     private func updateAppBadge(count: Int) {
@@ -106,8 +114,4 @@ class PRListViewModel: ObservableObject {
         selectedPRIndex = index
     }
 
-    var selectedPR: PullRequest? {
-        guard selectedPRIndex >= 0 && selectedPRIndex < pullRequests.count else { return nil }
-        return pullRequests[selectedPRIndex]
-    }
 }

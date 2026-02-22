@@ -67,12 +67,4 @@ class NotificationHistoryManager: ObservableObject {
         saveHistory()
     }
 
-    func clearHistory() {
-        items = []
-        saveHistory()
-    }
-
-    var unreadCount: Int {
-        items.filter { !$0.isRead }.count
-    }
 }

@@ -23,20 +23,4 @@ class SettingsManager: ObservableObject {
         self.soundEnabled = UserDefaults.standard.object(forKey: soundEnabledKey) as? Bool ?? true
     }
 
-    func saveSettings(username: String, token: String, soundEnabled: Bool) throws {
-        self.username = username
-        self.soundEnabled = soundEnabled
-        try KeychainManager.saveLegacyToken(token)
-    }
-
-    func clearAll() {
-        username = ""
-        soundEnabled = true
-        try? KeychainManager.deleteLegacyToken()
-        PRStateCache.clearAll()
-    }
-
-    var hasValidCredentials: Bool {
-        !username.isEmpty && KeychainManager.getLegacyToken() != nil
-    }
 }

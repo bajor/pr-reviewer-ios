@@ -134,68 +134,6 @@ struct StatusBadge: View {
     }
 }
 
-// Keep the old list view for reference (not used in main flow)
-struct PRListView: View {
-    @ObservedObject var viewModel: PRListViewModel
-
-    var body: some View {
-        List {
-            ForEach(Array(viewModel.pullRequests.enumerated()), id: \.element.id) { index, pr in
-                PRRowView(pr: pr, isSelected: index == viewModel.selectedPRIndex)
-                    .onTapGesture {
-                        viewModel.selectPR(at: index)
-                    }
-            }
-        }
-        .listStyle(.plain)
-        .refreshable {
-            await viewModel.refreshAll()
-        }
-    }
-}
-
-struct PRRowView: View {
-    let pr: PullRequest
-    let isSelected: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text("#\(pr.number)")
-                    .font(.caption.monospaced())
-                    .foregroundColor(.secondary)
-
-                Text(pr.repositoryFullName)
-                    .font(.caption)
-                    .foregroundColor(.accentColor)
-
-                Spacer()
-
-                Text(pr.updatedAt, style: .relative)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-
-            Text(pr.title)
-                .font(.subheadline.weight(.medium))
-                .lineLimit(2)
-
-            HStack {
-                Label(pr.user.login, systemImage: "person.circle")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-
-                Spacer()
-
-                StatusBadge(state: pr.state)
-            }
-        }
-        .padding(.vertical, 4)
-        .background(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
-        .cornerRadius(8)
-    }
-}
-
 #Preview {
     PRListHorizontalView(
         pullRequests: [
@@ -205,8 +143,7 @@ struct PRRowView: View {
                 title: "Add new feature for user authentication",
                 body: "This PR adds OAuth2 support and improves the login flow with better error handling.",
                 state: "open",
-                htmlUrl: "https://github.com",
-                user: GitHubUser(id: 1, login: "testuser", avatarUrl: nil),
+                user: GitHubUser(login: "testuser"),
                 head: GitRef(ref: "feature/auth", sha: "abc123", repo: nil),
                 base: GitRef(ref: "main", sha: "def456", repo: nil),
                 createdAt: Date(),

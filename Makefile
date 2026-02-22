@@ -1,4 +1,4 @@
-.PHONY: build test clean open simulator
+.PHONY: build test clean open simulator dead-code dead-code-ci
 
 # Build for connected device (Debug)
 build:
@@ -23,6 +23,15 @@ test:
 		-scheme PRReviewer \
 		-destination 'platform=iOS Simulator,name=iPhone 16' \
 		-configuration Debug
+
+# Dead code detection (local)
+dead-code:
+	periphery scan --strict
+
+# Dead code detection (CI - no code signing)
+dead-code-ci:
+	periphery scan --strict \
+		-- CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
 # Clean build artifacts
 clean:

@@ -121,7 +121,6 @@ actor GitHubAPI {
             let title: String
             let body: String?
             let state: String
-            let htmlUrl: String
             let user: GitHubUser
             let createdAt: Date
             let updatedAt: Date
@@ -130,7 +129,6 @@ actor GitHubAPI {
 
             enum CodingKeys: String, CodingKey {
                 case id, number, title, body, state, user
-                case htmlUrl = "html_url"
                 case createdAt = "created_at"
                 case updatedAt = "updated_at"
                 case pullRequest = "pull_request"
@@ -280,60 +278,6 @@ actor GitHubAPI {
         _ = try await makeRequest(url: url, method: "DELETE", body: nil)
     }
 
-    func addReactionToComment(owner: String, repo: String, commentId: Int, reaction: String) async throws {
-        let url = "\(Self.baseURL)/repos/\(owner)/\(repo)/pulls/comments/\(commentId)/reactions"
-
-        let payload = ["content": reaction]
-        let jsonData = try JSONSerialization.data(withJSONObject: payload)
-        _ = try await makeRequest(url: url, method: "POST", body: jsonData)
-    }
-
-    // MARK: - PR Actions
-
-    func closePR(owner: String, repo: String, number: Int) async throws {
-        let url = "\(Self.baseURL)/repos/\(owner)/\(repo)/pulls/\(number)"
-
-        let payload = ["state": "closed"]
-        let jsonData = try JSONSerialization.data(withJSONObject: payload)
-        _ = try await makeRequest(url: url, method: "PATCH", body: jsonData)
-    }
-
-    func approvePR(owner: String, repo: String, number: Int, commitId: String) async throws {
-        let url = "\(Self.baseURL)/repos/\(owner)/\(repo)/pulls/\(number)/reviews"
-
-        let payload: [String: Any] = [
-            "commit_id": commitId,
-            "event": "APPROVE"
-        ]
-        let jsonData = try JSONSerialization.data(withJSONObject: payload)
-        _ = try await makeRequest(url: url, method: "POST", body: jsonData)
-    }
-
-    func checkPRMergeability(owner: String, repo: String, number: Int) async throws -> PRMergeability {
-        let url = "\(Self.baseURL)/repos/\(owner)/\(repo)/pulls/\(number)"
-        let data = try await makeRequest(url: url)
-
-        struct PRStatus: Decodable {
-            let mergeable: Bool?
-            let mergeableState: String?
-
-            enum CodingKeys: String, CodingKey {
-                case mergeable
-                case mergeableState = "mergeable_state"
-            }
-        }
-
-        do {
-            let status = try decoder.decode(PRStatus.self, from: data)
-            return PRMergeability(
-                mergeable: status.mergeable,
-                mergeableState: status.mergeableState
-            )
-        } catch {
-            throw GitHubAPIError.decodingError(error)
-        }
-    }
-
     // MARK: - Check Runs & Status
 
     /// Get combined check status for a commit (GitHub Actions, etc.)
@@ -362,14 +306,12 @@ actor GitHubAPI {
             let response = try decoder.decode(CheckRunsResponse.self, from: data)
 
             let total = response.totalCount
-            let completed = response.checkRuns.filter { $0.status == "completed" }.count
             let successful = response.checkRuns.filter { $0.conclusion == "success" || $0.conclusion == "skipped" || $0.conclusion == "neutral" }.count
             let failed = response.checkRuns.filter { $0.conclusion == "failure" || $0.conclusion == "timed_out" }.count
             let pending = response.checkRuns.filter { $0.status != "completed" }.count
 
             return CheckRunsStatus(
                 total: total,
-                completed: completed,
                 successful: successful,
                 failed: failed,
                 pending: pending
@@ -400,7 +342,6 @@ actor GitHubAPI {
             let response = try decoder.decode(CompareResponse.self, from: data)
             return BranchComparison(
                 status: response.status,
-                aheadBy: response.aheadBy,
                 behindBy: response.behindBy
             )
         } catch {
@@ -685,27 +626,9 @@ actor GitHubAPI {
     }
 }
 
-struct PRMergeability: Sendable {
-    let mergeable: Bool?
-    let mergeableState: String?
-
-    // Check if PR is synced with target (not behind, no conflicts)
-    var isSynced: Bool {
-        guard let state = mergeableState else { return false }
-        // "clean" = ready to merge, "blocked" = CI checks pending but no conflicts
-        // "behind" = needs to be updated with base, "dirty" = has conflicts
-        return state == "clean" || state == "blocked" || state == "unstable"
-    }
-
-    var hasConflicts: Bool {
-        mergeableState == "dirty" || mergeable == false
-    }
-}
-
 /// GitHub Actions check runs status summary
-struct CheckRunsStatus: Sendable {
+struct CheckRunsStatus: Sendable, Codable {
     let total: Int
-    let completed: Int
     let successful: Int
     let failed: Int
     let pending: Int
@@ -718,7 +641,7 @@ struct CheckRunsStatus: Sendable {
         return .pending
     }
 
-    enum CheckStatus {
+    enum CheckStatus: String, Codable {
         case none
         case pending
         case passed
@@ -732,34 +655,16 @@ struct CheckRunsStatus: Sendable {
             case .failed: return "xmark.circle.fill"
             }
         }
-
-        var label: String {
-            switch self {
-            case .none: return "No checks"
-            case .pending: return "Checks running"
-            case .passed: return "Checks passed"
-            case .failed: return "Checks failed"
-            }
-        }
     }
 }
 
 /// Branch comparison result
-struct BranchComparison: Sendable {
+struct BranchComparison: Sendable, Codable {
     let status: String  // ahead, behind, diverged, identical
-    let aheadBy: Int
     let behindBy: Int
 
     var isBehind: Bool {
         behindBy > 0
-    }
-
-    var isDiverged: Bool {
-        status == "diverged"
-    }
-
-    var isUpToDate: Bool {
-        behindBy == 0
     }
 
     var statusLabel: String {

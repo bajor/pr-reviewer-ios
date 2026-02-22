@@ -1,17 +1,11 @@
 import Foundation
 
 struct PRState: Codable, Equatable {
-    let prId: Int
-    let prNumber: Int
-    let repositoryFullName: String
     let lastCommitSHA: String
     let commentCount: Int
     let lastChecked: Date
 
-    init(prId: Int, prNumber: Int, repositoryFullName: String, lastCommitSHA: String, commentCount: Int) {
-        self.prId = prId
-        self.prNumber = prNumber
-        self.repositoryFullName = repositoryFullName
+    init(lastCommitSHA: String, commentCount: Int) {
         self.lastCommitSHA = lastCommitSHA
         self.commentCount = commentCount
         self.lastChecked = Date()
@@ -45,7 +39,4 @@ struct PRStateCache {
         save(states)
     }
 
-    static func clearAll() {
-        UserDefaults.standard.removeObject(forKey: userDefaultsKey)
-    }
 }

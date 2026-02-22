@@ -106,7 +106,6 @@ struct HorizontalAppView: View {
             // Pages 2+: Individual PR details with back button
             ForEach(Array(viewModel.pullRequests.enumerated()), id: \.element.id) { index, pr in
                 PRDetailContainerView(
-                    pullRequest: pr,
                     detailViewModel: detailViewModelStore.viewModel(for: pr),
                     isVisible: currentPage == index + 2,
                     navigationTarget: currentPage == index + 2 ? pendingTarget : nil,

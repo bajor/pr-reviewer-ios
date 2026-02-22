@@ -84,11 +84,29 @@ jobs:
           # (code signing is disabled in CI, so Team ID isn't needed)
           echo "DEVELOPMENT_TEAM = " > Config/Local.xcconfig
 
+      - name: Build
+        run: |
+          xcodebuild -project PRReviewer.xcodeproj \
+            -scheme PRReviewer \
+            -destination 'generic/platform=iOS' \
+            -configuration Debug \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+  dead-code:
+    needs: apple-id-scan
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Local.xcconfig for CI
+        run: echo "DEVELOPMENT_TEAM = " > Config/Local.xcconfig
+
       - name: Install Periphery
-        run: brew install periphery
+        run: brew install peripheryapp/periphery/periphery
 
-      - name: Run Periphery
-        run: periphery scan --project PRReviewer.xcodeproj --schemes PRReviewer
-
-      - name: Build for simulator
-        run: make simulator
+      - name: Scan for dead code
+        run: make dead-code-ci

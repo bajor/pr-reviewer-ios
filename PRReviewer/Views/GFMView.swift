@@ -48,7 +48,7 @@ struct GFMBlockView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
         case .blockquote(let blocks):
-            GFMBlockquoteView(blocks: blocks, fontSize: fontSize, textColor: textColor)
+            GFMBlockquoteView(blocks: blocks, fontSize: fontSize)
 
         case .codeBlock(let language, let code):
             GFMCodeBlockView(language: language, code: code, fontSize: fontSize)
@@ -81,34 +81,6 @@ struct GFMHeadingView: View {
     let content: [GFMInline]
     let baseFontSize: CGFloat
     let textColor: Color
-
-    private var headingFont: Font {
-        let size: CGFloat
-        let weight: Font.Weight
-
-        switch level {
-        case 1:
-            size = baseFontSize * 1.8
-            weight = .bold
-        case 2:
-            size = baseFontSize * 1.5
-            weight = .bold
-        case 3:
-            size = baseFontSize * 1.25
-            weight = .semibold
-        case 4:
-            size = baseFontSize * 1.1
-            weight = .semibold
-        case 5:
-            size = baseFontSize
-            weight = .medium
-        default:
-            size = baseFontSize * 0.9
-            weight = .medium
-        }
-
-        return .system(size: size, weight: weight)
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -149,7 +121,6 @@ struct GFMHeadingView: View {
 struct GFMBlockquoteView: View {
     let blocks: [GFMBlock]
     let fontSize: CGFloat
-    let textColor: Color
 
     var body: some View {
         HStack(alignment: .top, spacing: 0) {

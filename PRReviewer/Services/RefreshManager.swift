@@ -133,9 +133,6 @@ class ChangeDetector {
             }
 
             let newState = PRState(
-                prId: pr.id,
-                prNumber: pr.number,
-                repositoryFullName: repoFullName,
                 lastCommitSHA: lastCommitSHA,
                 commentCount: commentCount
             )

@@ -2,7 +2,7 @@ import Foundation
 
 /// Represents a GitHub PR review thread (a conversation on a specific code location)
 /// Used for resolving/unresolving threads via GraphQL API
-struct ReviewThread: Identifiable, Sendable {
+struct ReviewThread: Identifiable, Sendable, Codable {
     let id: String  // GraphQL ID (e.g., "PRRT_...")
     let isResolved: Bool
     let viewerCanResolve: Bool

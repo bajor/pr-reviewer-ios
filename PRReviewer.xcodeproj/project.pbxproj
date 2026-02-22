@@ -41,6 +41,10 @@
 		A10000000000000000000048 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000048 /* Colors.swift */; };
 		A10000000000000000000016 /* NotificationHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* NotificationHistory.swift */; };
 		A10000000000000000000049 /* NotificationHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000049 /* NotificationHistoryView.swift */; };
+		A10000000000000000000017 /* PRSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000017 /* PRSnapshot.swift */; };
+		A10000000000000000000028 /* PRDiskCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000028 /* PRDiskCache.swift */; };
+		C10000000000000000000003 /* PRSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000003 /* PRSnapshotTests.swift */; };
+		C10000000000000000000004 /* PRDiskCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C20000000000000000000004 /* PRDiskCacheTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +84,10 @@
 		A30000000000000000000001 /* PRReviewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PRReviewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20000000000000000000001 /* DiffParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiffParserTests.swift; sourceTree = "<group>"; };
 		C20000000000000000000002 /* GFMParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GFMParserTests.swift; sourceTree = "<group>"; };
+		C20000000000000000000003 /* PRSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSnapshotTests.swift; sourceTree = "<group>"; };
+		C20000000000000000000004 /* PRDiskCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDiskCacheTests.swift; sourceTree = "<group>"; };
+		A20000000000000000000017 /* PRSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSnapshot.swift; sourceTree = "<group>"; };
+		A20000000000000000000028 /* PRDiskCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDiskCache.swift; sourceTree = "<group>"; };
 		C30000000000000000000001 /* PRReviewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PRReviewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -147,6 +155,8 @@
 			children = (
 				C20000000000000000000001 /* DiffParserTests.swift */,
 				C20000000000000000000002 /* GFMParserTests.swift */,
+				C20000000000000000000003 /* PRSnapshotTests.swift */,
+				C20000000000000000000004 /* PRDiskCacheTests.swift */,
 			);
 			path = PRReviewerTests;
 			sourceTree = "<group>";
@@ -161,6 +171,7 @@
 				A20000000000000000000014 /* PRState.swift */,
 				A20000000000000000000015 /* ReviewThread.swift */,
 				A20000000000000000000016 /* NotificationHistory.swift */,
+				A20000000000000000000017 /* PRSnapshot.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -177,6 +188,7 @@
 				A20000000000000000000026 /* PRCacheService.swift */,
 				A20000000000000000000027 /* AccountManager.swift */,
 				A20000000000000000000050 /* GFMParser.swift */,
+				A20000000000000000000028 /* PRDiskCache.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -360,6 +372,8 @@
 				A10000000000000000000049 /* NotificationHistoryView.swift in Sources */,
 				A10000000000000000000050 /* GFMParser.swift in Sources */,
 				A10000000000000000000051 /* GFMView.swift in Sources */,
+				A10000000000000000000017 /* PRSnapshot.swift in Sources */,
+				A10000000000000000000028 /* PRDiskCache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -369,6 +383,8 @@
 			files = (
 				C10000000000000000000001 /* DiffParserTests.swift in Sources */,
 				C10000000000000000000002 /* GFMParserTests.swift in Sources */,
+				C10000000000000000000003 /* PRSnapshotTests.swift in Sources */,
+				C10000000000000000000004 /* PRDiskCacheTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
