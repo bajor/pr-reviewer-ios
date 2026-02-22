@@ -31,7 +31,7 @@ dead-code:
 # Dead code detection (CI - no code signing)
 dead-code-ci:
 	periphery scan --strict \
-		--build-arguments 'CODE_SIGN_IDENTITY=-,CODE_SIGNING_REQUIRED=NO,CODE_SIGNING_ALLOWED=NO'
+		-- CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
 # Clean build artifacts
 clean:
