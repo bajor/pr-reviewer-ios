@@ -6,33 +6,29 @@ actor PRDiskCache {
     static let shared = PRDiskCache()
 
     private let cacheDirectory: URL
-    private let encoder: JSONEncoder
-    private let decoder: JSONDecoder
     private let fileManager = FileManager.default
+
+    private let encoder: JSONEncoder = {
+        let e = JSONEncoder()
+        e.dateEncodingStrategy = .iso8601
+        return e
+    }()
+
+    private let decoder: JSONDecoder = {
+        let d = JSONDecoder()
+        d.dateDecodingStrategy = .iso8601
+        return d
+    }()
 
     private init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         cacheDirectory = appSupport.appendingPathComponent("PRReviewer/cache", isDirectory: true)
-
-        encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-
-        decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
         try? fileManager.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
     }
 
     // Visible for testing
     init(cacheDirectory: URL) {
         self.cacheDirectory = cacheDirectory
-
-        encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-
-        decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
         try? FileManager.default.createDirectory(at: cacheDirectory, withIntermediateDirectories: true)
     }
 
@@ -58,20 +54,12 @@ actor PRDiskCache {
 
         let data = try encoder.encode(snapshot)
         try data.write(to: dir.appendingPathComponent("snapshot.json"), options: .atomic)
-
-        // Write SHA separately for quick change detection without full deserialize
-        try snapshot.headSHA.write(to: dir.appendingPathComponent("sha.txt"), atomically: true, encoding: .utf8)
     }
 
     func loadSnapshot(for prId: Int) -> PRSnapshot? {
         let url = prDirectory(for: prId).appendingPathComponent("snapshot.json")
         guard let data = try? Data(contentsOf: url) else { return nil }
         return try? decoder.decode(PRSnapshot.self, from: data)
-    }
-
-    func snapshotHeadSHA(for prId: Int) -> String? {
-        let url = prDirectory(for: prId).appendingPathComponent("sha.txt")
-        return try? String(contentsOf: url, encoding: .utf8)
     }
 
     // MARK: - Cleanup

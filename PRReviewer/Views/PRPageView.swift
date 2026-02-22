@@ -129,7 +129,11 @@ struct PRDetailContainerView: View {
                     .tint(GruvboxColors.fg1)
                     .scaleEffect(1.5)
             }
+
+            // Disappeared diff banner (shown temporarily after background sync removes files)
+            DisappearedFilesBanner(filenames: detailViewModel.disappearedFiles)
         }
+        .animation(.easeInOut(duration: 0.3), value: detailViewModel.disappearedFiles)
         .background(GruvboxColors.bg0)
         .onChange(of: isVisible) { _, nowVisible in
             // Lazy load: only load details when this PR becomes visible
@@ -1172,6 +1176,40 @@ struct FullFileContextView: View {
         let lineNumber = line.newLineNumber ?? line.oldLineNumber ?? 0
         viewModel.prepareAddComment(file: file.filename, line: lineNumber)
         selectedLineKey = nil
+    }
+}
+
+// MARK: - Disappeared Files Banner
+
+private struct DisappearedFilesBanner: View {
+    let filenames: [String]
+
+    var body: some View {
+        if !filenames.isEmpty {
+            VStack {
+                VStack(spacing: 4) {
+                    ForEach(filenames, id: \.self) { filename in
+                        HStack(spacing: 6) {
+                            Image(systemName: "checkmark.circle.fill")
+                            Text(filename)
+                                .font(.caption.monospaced())
+                            Text("no longer in diff")
+                                .font(.caption)
+                        }
+                        .foregroundColor(GruvboxColors.bg0)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .frame(maxWidth: .infinity)
+                        .background(GruvboxColors.greenLight)
+                        .cornerRadius(8)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                Spacer()
+            }
+            .transition(.move(edge: .top).combined(with: .opacity))
+        }
     }
 }
 

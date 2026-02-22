@@ -82,19 +82,6 @@ final class PRDiskCacheTests: XCTestCase {
         XCTAssertNil(loaded)
     }
 
-    func testSnapshotHeadSHA_returnsCorrectSHA() async throws {
-        let snapshot = makeSnapshot(prId: 42, prNumber: 10, headSHA: "sha256hash")
-        try await cache.saveSnapshot(snapshot, for: 42)
-
-        let sha = await cache.snapshotHeadSHA(for: 42)
-        XCTAssertEqual(sha, "sha256hash")
-    }
-
-    func testSnapshotHeadSHA_missing_returnsNil() async {
-        let sha = await cache.snapshotHeadSHA(for: 999)
-        XCTAssertNil(sha)
-    }
-
     func testSnapshot_overwritesExisting() async throws {
         let snapshot1 = makeSnapshot(prId: 42, prNumber: 10, headSHA: "first")
         try await cache.saveSnapshot(snapshot1, for: 42)
@@ -116,8 +103,6 @@ final class PRDiskCacheTests: XCTestCase {
 
         let loaded = await cache.loadSnapshot(for: 42)
         XCTAssertNil(loaded)
-        let sha = await cache.snapshotHeadSHA(for: 42)
-        XCTAssertNil(sha)
     }
 
     func testDeleteSnapshot_nonExistent_doesNotThrow() async throws {
@@ -134,9 +119,12 @@ final class PRDiskCacheTests: XCTestCase {
         // PR 2 is closed (not in open set)
         try await cache.cleanupClosedPRs(openPRIds: Set([1, 3]))
 
-        XCTAssertNotNil(await cache.loadSnapshot(for: 1))
-        XCTAssertNil(await cache.loadSnapshot(for: 2))
-        XCTAssertNotNil(await cache.loadSnapshot(for: 3))
+        let snap1 = await cache.loadSnapshot(for: 1)
+        let snap2 = await cache.loadSnapshot(for: 2)
+        let snap3 = await cache.loadSnapshot(for: 3)
+        XCTAssertNotNil(snap1)
+        XCTAssertNil(snap2)
+        XCTAssertNotNil(snap3)
     }
 
     func testCleanupClosedPRs_emptyOpenSet_removesAll() async throws {
@@ -145,8 +133,10 @@ final class PRDiskCacheTests: XCTestCase {
 
         try await cache.cleanupClosedPRs(openPRIds: Set())
 
-        XCTAssertNil(await cache.loadSnapshot(for: 1))
-        XCTAssertNil(await cache.loadSnapshot(for: 2))
+        let snap1 = await cache.loadSnapshot(for: 1)
+        let snap2 = await cache.loadSnapshot(for: 2)
+        XCTAssertNil(snap1)
+        XCTAssertNil(snap2)
     }
 
     func testCleanupClosedPRs_preservesPRListFile() async throws {

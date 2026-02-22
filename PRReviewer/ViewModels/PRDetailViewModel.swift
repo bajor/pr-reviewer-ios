@@ -169,12 +169,6 @@ class PRDetailViewModel: ObservableObject {
         isSyncing = true
         defer { isSyncing = false }
 
-        // SHA-based change detection: skip if nothing changed
-        let cachedSHA = await diskCache.snapshotHeadSHA(for: pullRequest.id)
-        if cachedSHA == pullRequest.head.sha {
-            return
-        }
-
         do {
             let snapshot = try await fetchFullSnapshot()
             await saveSnapshotToCaches(snapshot)
@@ -286,8 +280,21 @@ class PRDetailViewModel: ObservableObject {
         self.currentItemIndex = 0
     }
 
-    /// Apply a disk-cached snapshot to view model
+    /// Apply a snapshot to view model, detecting disappeared files from background sync.
     private func applySnapshot(_ snapshot: PRSnapshot) {
+        if !fileDiffs.isEmpty {
+            let oldFilenames = Set(fileDiffs.map(\.filename))
+            let newFilenames = Set(snapshot.fileDiffs.map(\.filename))
+            let disappeared = oldFilenames.subtracting(newFilenames)
+            if !disappeared.isEmpty {
+                self.disappearedFiles = disappeared.sorted()
+                Task { @MainActor in
+                    try? await Task.sleep(for: .seconds(5))
+                    self.disappearedFiles = []
+                }
+            }
+        }
+
         self.fileDiffs = snapshot.fileDiffs
         self.comments = snapshot.comments
         self.issueComments = snapshot.issueComments
@@ -297,10 +304,6 @@ class PRDetailViewModel: ObservableObject {
         self.branchComparison = snapshot.branchComparison
         self.navigableItems = buildNavigableItems()
         self.currentItemIndex = min(self.currentItemIndex, max(0, navigableItems.count - 1))
-    }
-
-    private func filterActiveComments(_ comments: [PRComment]) -> [PRComment] {
-        filterActiveComments(comments, against: fileDiffs)
     }
 
     private func filterActiveComments(_ comments: [PRComment], against diffs: [FileDiff]) -> [PRComment] {
@@ -519,7 +522,7 @@ class PRDetailViewModel: ObservableObject {
 
             // Reload comments
             let newComments = try await api.getPRComments(owner: owner, repo: repo, number: pullRequest.number)
-            self.comments = filterActiveComments(newComments)
+            self.comments = filterActiveComments(newComments, against: fileDiffs)
             self.navigableItems = buildNavigableItems()
 
             isSubmittingComment = false
@@ -547,7 +550,7 @@ class PRDetailViewModel: ObservableObject {
 
             // Reload comments
             let newComments = try await api.getPRComments(owner: owner, repo: repo, number: pullRequest.number)
-            self.comments = filterActiveComments(newComments)
+            self.comments = filterActiveComments(newComments, against: fileDiffs)
 
             // Refresh review threads so new reply appears in cards
             await refreshReviewThreads()
@@ -729,7 +732,7 @@ class PRDetailViewModel: ObservableObject {
 
             // Reload comments and refresh threads
             let newComments = try await api.getPRComments(owner: owner, repo: repo, number: pullRequest.number)
-            self.comments = filterActiveComments(newComments)
+            self.comments = filterActiveComments(newComments, against: fileDiffs)
             await refreshReviewThreads()
             self.navigableItems = buildNavigableItems()
             return true
