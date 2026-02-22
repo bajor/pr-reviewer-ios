@@ -149,10 +149,14 @@ struct PRDetailContainerView: View {
                 }
             }
         }
-        .sheet(isPresented: $detailViewModel.showAddComment) {
+        .sheet(isPresented: $detailViewModel.showAddComment, onDismiss: {
+            detailViewModel.checkPendingSwap()
+        }) {
             AddCommentSheet(viewModel: detailViewModel)
         }
-        .sheet(isPresented: $detailViewModel.showAddGeneralComment) {
+        .sheet(isPresented: $detailViewModel.showAddGeneralComment, onDismiss: {
+            detailViewModel.checkPendingSwap()
+        }) {
             AddGeneralCommentSheet(viewModel: detailViewModel)
         }
         .onChange(of: navigationTarget) { _, target in

@@ -70,6 +70,9 @@ class PRDetailViewModel: ObservableObject {
     // Track if details have been loaded (for lazy loading)
     @Published private(set) var isLoaded = false
 
+    // Disappeared files (shown as green banner after background sync)
+    @Published var disappearedFiles: [String] = []
+
     let pullRequest: PullRequest
     private let api = GitHubAPI()
     private let settings = SettingsManager.shared
@@ -77,6 +80,8 @@ class PRDetailViewModel: ObservableObject {
     private let diskCache = PRDiskCache.shared
 
     private var navigableItems: [NavigableItem] = []
+    private var isSyncing = false
+    private var pendingSnapshot: PRSnapshot?
 
     init(pullRequest: PullRequest) {
         self.pullRequest = pullRequest
@@ -107,7 +112,8 @@ class PRDetailViewModel: ObservableObject {
         }
     }
 
-    /// Load PR details, checking in-memory cache, then disk cache, then network
+    /// Load PR details, checking in-memory cache, then disk cache, then network.
+    /// After loading from cache, kicks off a background sync to get fresh data.
     func loadDetails() async {
         guard !isLoaded else { return }
 
@@ -115,17 +121,19 @@ class PRDetailViewModel: ObservableObject {
         if let cached = await cache.getPRDetails(for: pullRequest.id) {
             applyPRDetails(cached)
             isLoaded = true
+            Task { await syncInBackground() }
             return
         }
 
-        // L2: disk cache
+        // L2: disk cache (instant, no spinner)
         if let snapshot = await diskCache.loadSnapshot(for: pullRequest.id) {
             applySnapshot(snapshot)
             isLoaded = true
+            Task { await syncInBackground() }
             return
         }
 
-        // L3: network
+        // L3: network (with spinner)
         await loadDetailsFromNetwork()
     }
 
@@ -141,76 +149,108 @@ class PRDetailViewModel: ObservableObject {
         error = nil
 
         do {
-            async let filesTask = api.getPRFiles(owner: owner, repo: repo, number: pullRequest.number)
-            async let commentsTask = api.getPRComments(owner: owner, repo: repo, number: pullRequest.number)
-            async let issueCommentsTask = api.getIssueComments(owner: owner, repo: repo, number: pullRequest.number)
-
-            let (files, prComments, fetchedIssueComments) = try await (filesTask, commentsTask, issueCommentsTask)
-
-            // Fetch full file content for each file, using cache when available
-            var diffs: [FileDiff] = []
-            for file in files {
-                let fullContent = await getFileContentCached(path: file.filename, ref: pullRequest.head.sha)
-                let diff = DiffParser.parseFullFile(file: file, fullContent: fullContent)
-                diffs.append(diff)
-            }
-
-            self.fileDiffs = diffs
-            self.comments = filterActiveComments(prComments)
-            self.issueComments = fetchedIssueComments
-
-            // Fetch review threads for resolve/unresolve functionality and minimized status
-            await refreshReviewThreads()
-
-            // Fetch check runs status and branch comparison (non-blocking)
-            async let checkRunsTask = api.getCheckRuns(owner: owner, repo: repo, ref: pullRequest.head.sha)
-            async let branchCompareTask = api.compareBranches(
-                owner: owner,
-                repo: repo,
-                base: pullRequest.base.ref,
-                head: pullRequest.head.ref
-            )
-
-            self.checkRunsStatus = try? await checkRunsTask
-            self.branchComparison = try? await branchCompareTask
-
-            self.navigableItems = buildNavigableItems()
-            self.currentItemIndex = 0
-
-            // Store in cache
-            let details = PRCacheService.PRDetails(
-                fileDiffs: self.fileDiffs,
-                comments: self.comments,
-                issueComments: self.issueComments,
-                reviewThreads: self.reviewThreads,
-                minimizedCommentIds: self.minimizedCommentIds,
-                checkRunsStatus: self.checkRunsStatus,
-                branchComparison: self.branchComparison
-            )
-            await cache.setPRDetails(details, for: pullRequest.id)
-
-            // Save to disk for fast future launches
-            let snapshot = PRSnapshot(
-                pullRequest: pullRequest,
-                fileDiffs: self.fileDiffs,
-                comments: self.comments,
-                issueComments: self.issueComments,
-                reviewThreads: self.reviewThreads,
-                minimizedCommentIds: self.minimizedCommentIds,
-                checkRunsStatus: self.checkRunsStatus,
-                branchComparison: self.branchComparison,
-                headSHA: pullRequest.head.sha,
-                savedAt: Date()
-            )
-            try? await diskCache.saveSnapshot(snapshot, for: pullRequest.id)
-
+            let snapshot = try await fetchFullSnapshot()
+            applySnapshot(snapshot)
+            await saveSnapshotToCaches(snapshot)
             isLoaded = true
-
         } catch {
             self.error = error.localizedDescription
         }
 
         isLoading = false
+    }
+
+    // MARK: - Background Sync
+
+    /// Fetch fresh data in background without blocking UI.
+    /// If user is editing a comment, defers the swap until they finish.
+    private func syncInBackground() async {
+        guard !isSyncing else { return }
+        isSyncing = true
+        defer { isSyncing = false }
+
+        // SHA-based change detection: skip if nothing changed
+        let cachedSHA = await diskCache.snapshotHeadSHA(for: pullRequest.id)
+        if cachedSHA == pullRequest.head.sha {
+            return
+        }
+
+        do {
+            let snapshot = try await fetchFullSnapshot()
+            await saveSnapshotToCaches(snapshot)
+
+            if isUserEditing {
+                pendingSnapshot = snapshot
+            } else {
+                applySnapshot(snapshot)
+            }
+        } catch {
+            // Silent failure - old data stays displayed
+        }
+    }
+
+    /// Fetch all PR data into a snapshot without side effects on @Published properties.
+    private func fetchFullSnapshot() async throws -> PRSnapshot {
+        async let filesTask = api.getPRFiles(owner: owner, repo: repo, number: pullRequest.number)
+        async let commentsTask = api.getPRComments(owner: owner, repo: repo, number: pullRequest.number)
+        async let issueCommentsTask = api.getIssueComments(owner: owner, repo: repo, number: pullRequest.number)
+
+        let (files, prComments, fetchedIssueComments) = try await (filesTask, commentsTask, issueCommentsTask)
+
+        var diffs: [FileDiff] = []
+        for file in files {
+            let fullContent = await getFileContentCached(path: file.filename, ref: pullRequest.head.sha)
+            diffs.append(DiffParser.parseFullFile(file: file, fullContent: fullContent))
+        }
+
+        let filteredComments = filterActiveComments(prComments, against: diffs)
+
+        let (threads, minimizedIds) = (try? await api.getReviewThreads(owner: owner, repo: repo, number: pullRequest.number)) ?? ([], Set())
+        let checkRuns = try? await api.getCheckRuns(owner: owner, repo: repo, ref: pullRequest.head.sha)
+        let branchComp = try? await api.compareBranches(
+            owner: owner, repo: repo,
+            base: pullRequest.base.ref, head: pullRequest.head.ref
+        )
+
+        return PRSnapshot(
+            pullRequest: pullRequest,
+            fileDiffs: diffs,
+            comments: filteredComments,
+            issueComments: fetchedIssueComments,
+            reviewThreads: threads,
+            minimizedCommentIds: minimizedIds,
+            checkRunsStatus: checkRuns,
+            branchComparison: branchComp,
+            headSHA: pullRequest.head.sha,
+            savedAt: Date()
+        )
+    }
+
+    /// Save snapshot to both in-memory and disk caches.
+    private func saveSnapshotToCaches(_ snapshot: PRSnapshot) async {
+        let details = PRCacheService.PRDetails(
+            fileDiffs: snapshot.fileDiffs,
+            comments: snapshot.comments,
+            issueComments: snapshot.issueComments,
+            reviewThreads: snapshot.reviewThreads,
+            minimizedCommentIds: snapshot.minimizedCommentIds,
+            checkRunsStatus: snapshot.checkRunsStatus,
+            branchComparison: snapshot.branchComparison
+        )
+        await cache.setPRDetails(details, for: pullRequest.id)
+        try? await diskCache.saveSnapshot(snapshot, for: pullRequest.id)
+    }
+
+    /// Check if user is currently editing a comment (prevents state swap).
+    private var isUserEditing: Bool {
+        showAddComment || showAddGeneralComment || isSubmittingComment || isSubmittingGeneralComment
+    }
+
+    /// Apply pending snapshot if user is done editing.
+    func checkPendingSwap() {
+        guard let snapshot = pendingSnapshot, !isUserEditing else { return }
+        pendingSnapshot = nil
+        applySnapshot(snapshot)
     }
 
     /// Get file content with caching
@@ -260,12 +300,16 @@ class PRDetailViewModel: ObservableObject {
     }
 
     private func filterActiveComments(_ comments: [PRComment]) -> [PRComment] {
+        filterActiveComments(comments, against: fileDiffs)
+    }
+
+    private func filterActiveComments(_ comments: [PRComment], against diffs: [FileDiff]) -> [PRComment] {
         comments.filter { comment in
             guard let path = comment.path, let line = comment.line else {
                 return true
             }
 
-            guard let file = fileDiffs.first(where: { $0.filename == path }) else {
+            guard let file = diffs.first(where: { $0.filename == path }) else {
                 return false
             }
 
@@ -480,6 +524,7 @@ class PRDetailViewModel: ObservableObject {
 
             isSubmittingComment = false
             showAddComment = false
+            checkPendingSwap()
             return true
         } catch {
             self.error = error.localizedDescription
@@ -535,6 +580,7 @@ class PRDetailViewModel: ObservableObject {
 
             isSubmittingGeneralComment = false
             showAddGeneralComment = false
+            checkPendingSwap()
             return true
         } catch {
             self.error = error.localizedDescription
