@@ -63,7 +63,7 @@ struct NavButton: View {
 #Preview {
     NavigationButtonsView(viewModel: PRDetailViewModel(pullRequest: PullRequest(
         id: 1, number: 1, title: "Test", body: nil, state: "open",
-        htmlUrl: "", user: GitHubUser(id: 1, login: "test", avatarUrl: nil),
+        user: GitHubUser(login: "test"),
         head: GitRef(ref: "main", sha: "", repo: nil),
         base: GitRef(ref: "main", sha: "", repo: nil),
         createdAt: Date(), updatedAt: Date()

@@ -94,3 +94,19 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+  dead-code:
+    needs: apple-id-scan
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Local.xcconfig for CI
+        run: echo "DEVELOPMENT_TEAM = " > Config/Local.xcconfig
+
+      - name: Install Periphery
+        run: brew install peripheryapp/periphery/periphery
+
+      - name: Scan for dead code
+        run: make dead-code-ci

@@ -81,10 +81,6 @@ struct DiffParser {
         // Create a single hunk containing all lines
         let hunk = DiffHunk(
             header: "Full file",
-            oldStart: 1,
-            oldCount: allLines.count,
-            newStart: 1,
-            newCount: allLines.count,
             lines: diffLines
         )
 
@@ -148,10 +144,6 @@ struct DiffParser {
         let lines = patch.components(separatedBy: "\n")
 
         var currentHunkHeader: String?
-        var currentOldStart = 0
-        var currentOldCount = 0
-        var currentNewStart = 0
-        var currentNewCount = 0
         var currentLines: [DiffLine] = []
         var oldLine = 0
         var newLine = 0
@@ -161,20 +153,12 @@ struct DiffParser {
                 if let header = currentHunkHeader {
                     hunks.append(DiffHunk(
                         header: header,
-                        oldStart: currentOldStart,
-                        oldCount: currentOldCount,
-                        newStart: currentNewStart,
-                        newCount: currentNewCount,
                         lines: currentLines
                     ))
                 }
 
                 if let parsed = parseHunkHeader(line) {
                     currentHunkHeader = line
-                    currentOldStart = parsed.oldStart
-                    currentOldCount = parsed.oldCount
-                    currentNewStart = parsed.newStart
-                    currentNewCount = parsed.newCount
                     currentLines = [DiffLine(
                         type: .hunkHeader,
                         content: line,
@@ -193,10 +177,6 @@ struct DiffParser {
         if let header = currentHunkHeader {
             hunks.append(DiffHunk(
                 header: header,
-                oldStart: currentOldStart,
-                oldCount: currentOldCount,
-                newStart: currentNewStart,
-                newCount: currentNewCount,
                 lines: currentLines
             ))
         }

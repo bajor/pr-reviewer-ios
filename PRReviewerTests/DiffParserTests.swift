@@ -22,11 +22,7 @@ final class DiffParserTests: XCTestCase {
         let result = DiffParser.parseHunks(patch: patch)
 
         XCTAssertEqual(result.count, 1)
-        let hunk = result[0]
-        XCTAssertEqual(hunk.oldStart, 1)
-        XCTAssertEqual(hunk.oldCount, 3)
-        XCTAssertEqual(hunk.newStart, 1)
-        XCTAssertEqual(hunk.newCount, 4)
+        XCTAssertEqual(result[0].header, "@@ -1,3 +1,4 @@")
     }
 
     func testParseHunks_multipleHunks_parsesAll() {
@@ -45,8 +41,8 @@ final class DiffParserTests: XCTestCase {
         let result = DiffParser.parseHunks(patch: patch)
 
         XCTAssertEqual(result.count, 2)
-        XCTAssertEqual(result[0].oldStart, 1)
-        XCTAssertEqual(result[1].oldStart, 10)
+        XCTAssertEqual(result[0].header, "@@ -1,3 +1,3 @@")
+        XCTAssertEqual(result[1].header, "@@ -10,2 +10,3 @@")
     }
 
     func testParseHunks_additionLine_hasCorrectType() {
@@ -151,7 +147,6 @@ final class DiffParserTests: XCTestCase {
             status: .modified,
             additions: 5,
             deletions: 3,
-            changes: 8,
             patch: "@@ -1,1 +1,1 @@\n context"
         )
 
@@ -170,7 +165,6 @@ final class DiffParserTests: XCTestCase {
             status: .added,
             additions: 0,
             deletions: 0,
-            changes: 0,
             patch: nil
         )
 
@@ -189,8 +183,7 @@ final class DiffParserTests: XCTestCase {
 
         let result = DiffParser.parseHunks(patch: patch)
 
-        XCTAssertEqual(result[0].oldCount, 1)
-        XCTAssertEqual(result[0].newCount, 1)
+        XCTAssertEqual(result[0].header, "@@ -1 +1 @@")
     }
 
     func testParseHunks_hunkHeaderWithFunctionContext_parsesCorrectly() {
@@ -202,8 +195,7 @@ final class DiffParserTests: XCTestCase {
 
         let result = DiffParser.parseHunks(patch: patch)
 
-        XCTAssertEqual(result[0].oldStart, 10)
-        XCTAssertEqual(result[0].newStart, 10)
+        XCTAssertTrue(result[0].header.contains("-10,5"))
     }
 
     // MARK: - Content Preservation Tests

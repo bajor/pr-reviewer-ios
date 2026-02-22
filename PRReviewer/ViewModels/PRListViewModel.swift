@@ -105,13 +105,6 @@ class PRListViewModel: ObservableObject {
         isLoading = false
     }
 
-    /// Force a full refresh, bypassing all caches
-    func forceRefreshAll() async {
-        await cache.invalidatePRList()
-        await cache.invalidateAllPRDetails()
-        await refreshAll(forceRefresh: true)
-    }
-
     private func updateAppBadge(count: Int) {
         UNUserNotificationCenter.current().setBadgeCount(count)
     }
@@ -121,8 +114,4 @@ class PRListViewModel: ObservableObject {
         selectedPRIndex = index
     }
 
-    var selectedPR: PullRequest? {
-        guard selectedPRIndex >= 0 && selectedPRIndex < pullRequests.count else { return nil }
-        return pullRequests[selectedPRIndex]
-    }
 }

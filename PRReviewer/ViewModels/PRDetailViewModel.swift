@@ -75,7 +75,6 @@ class PRDetailViewModel: ObservableObject {
 
     let pullRequest: PullRequest
     private let api = GitHubAPI()
-    private let settings = SettingsManager.shared
     private let cache = PRCacheService.shared
     private let diskCache = PRDiskCache.shared
 
@@ -134,13 +133,6 @@ class PRDetailViewModel: ObservableObject {
         }
 
         // L3: network (with spinner)
-        await loadDetailsFromNetwork()
-    }
-
-    /// Force refresh from network, bypassing cache
-    func forceRefresh() async {
-        await cache.invalidatePRDetails(for: pullRequest.id)
-        isLoaded = false
         await loadDetailsFromNetwork()
     }
 
@@ -207,16 +199,13 @@ class PRDetailViewModel: ObservableObject {
         )
 
         return PRSnapshot(
-            pullRequest: pullRequest,
             fileDiffs: diffs,
             comments: filteredComments,
             issueComments: fetchedIssueComments,
             reviewThreads: threads,
             minimizedCommentIds: minimizedIds,
             checkRunsStatus: checkRuns,
-            branchComparison: branchComp,
-            headSHA: pullRequest.head.sha,
-            savedAt: Date()
+            branchComparison: branchComp
         )
     }
 
@@ -447,24 +436,6 @@ class PRDetailViewModel: ObservableObject {
         return "\(currentCardIndex + 1)/\(cards.count)"
     }
 
-    /// Get code context for a comment (the file diff containing this comment)
-    func codeContextFor(comment: PRComment) -> (file: FileDiff, hunk: DiffHunk, lineIndex: Int)? {
-        guard let path = comment.path, let line = comment.line else { return nil }
-
-        for file in fileDiffs {
-            if file.filename == path {
-                for hunk in file.hunks {
-                    for (lineIndex, diffLine) in hunk.lines.enumerated() {
-                        if diffLine.newLineNumber == line || diffLine.oldLineNumber == line {
-                            return (file, hunk, lineIndex)
-                        }
-                    }
-                }
-            }
-        }
-        return nil
-    }
-
     // Returns scroll ID for current item (first line of diff block)
     var currentScrollId: String? {
         guard let item = currentItem else { return nil }
@@ -474,26 +445,6 @@ class PRDetailViewModel: ObservableObject {
         case .commentGroup(let fileIndex, let hunkIndex, let lineIndex):
             return "line-\(fileIndex)-\(hunkIndex)-\(lineIndex)"
         }
-    }
-
-    // Check if a line is the first line of the current diff block
-    func isCurrentLine(fileIndex: Int, hunkIndex: Int, lineIndex: Int) -> Bool {
-        guard let item = currentItem else { return false }
-        switch item {
-        case .diffBlock(let f, let h, let firstLine, _):
-            return f == fileIndex && h == hunkIndex && firstLine == lineIndex
-        case .commentGroup(let f, let h, let l):
-            return f == fileIndex && h == hunkIndex && l == lineIndex
-        }
-    }
-
-    // Check if a line's comments are the current navigation target
-    func isCurrentCommentGroup(fileIndex: Int, hunkIndex: Int, lineIndex: Int) -> Bool {
-        guard let item = currentItem else { return false }
-        if case .commentGroup(let f, let h, let l) = item {
-            return f == fileIndex && h == hunkIndex && l == lineIndex
-        }
-        return false
     }
 
     // MARK: - Comment Actions
@@ -610,14 +561,6 @@ class PRDetailViewModel: ObservableObject {
         return true
     }
 
-    /// Get visible comments for a specific file and line
-    func visibleCommentsFor(filename: String, line: DiffLine) -> [PRComment] {
-        let lineNumber = line.newLineNumber ?? line.oldLineNumber
-        return comments.filter { comment in
-            comment.path == filename && comment.line == lineNumber && shouldShowComment(comment)
-        }
-    }
-
     // MARK: - Comment Folding (In-Memory)
 
     /// Check if a comment is folded/collapsed
@@ -637,11 +580,6 @@ class PRDetailViewModel: ObservableObject {
     /// Fold a comment
     func foldComment(_ commentId: Int) {
         foldedCommentIds.insert(commentId)
-    }
-
-    /// Unfold a comment
-    func unfoldComment(_ commentId: Int) {
-        foldedCommentIds.remove(commentId)
     }
 
     // MARK: - Review Thread Management (GitHub API)
@@ -756,66 +694,4 @@ class PRDetailViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Deep Link Navigation
-
-    /// Navigate to a specific file and line (from notification deep link)
-    func navigateToFileLine(filePath: String, line: Int) {
-        // Find the file index
-        guard let fileIndex = fileDiffs.firstIndex(where: { $0.filename == filePath }) else {
-            return
-        }
-
-        let file = fileDiffs[fileIndex]
-
-        // Find the hunk and line that matches
-        for (hunkIndex, hunk) in file.hunks.enumerated() {
-            for (lineIndex, diffLine) in hunk.lines.enumerated() {
-                let lineNumber = diffLine.newLineNumber ?? diffLine.oldLineNumber
-                if lineNumber == line {
-                    // Find the navigable item that contains this line
-                    if let itemIndex = navigableItems.firstIndex(where: { item in
-                        switch item {
-                        case .diffBlock(let f, let h, let firstLine, _):
-                            if f == fileIndex && h == hunkIndex {
-                                // Check if line is in this block
-                                let blockEnd = findBlockEnd(fileIndex: f, hunkIndex: h, startLine: firstLine)
-                                return lineIndex >= firstLine && lineIndex <= blockEnd
-                            }
-                            return false
-                        case .commentGroup(let f, let h, let l):
-                            return f == fileIndex && h == hunkIndex && l == lineIndex
-                        }
-                    }) {
-                        currentItemIndex = itemIndex
-                        return
-                    }
-                }
-            }
-        }
-    }
-
-    /// Find the end line index of a diff block
-    private func findBlockEnd(fileIndex: Int, hunkIndex: Int, startLine: Int) -> Int {
-        guard fileIndex < fileDiffs.count else { return startLine }
-        let file = fileDiffs[fileIndex]
-        guard hunkIndex < file.hunks.count else { return startLine }
-        let hunk = file.hunks[hunkIndex]
-        guard startLine < hunk.lines.count else { return startLine }
-
-        let blockType = hunk.lines[startLine].type
-        var endLine = startLine
-
-        for i in (startLine + 1)..<hunk.lines.count {
-            let line = hunk.lines[i]
-            if line.type != blockType {
-                break
-            }
-            if hasComment(for: file.filename, line: line) {
-                break
-            }
-            endLine = i
-        }
-
-        return endLine
-    }
 }

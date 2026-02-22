@@ -18,31 +18,27 @@ final class PRDiskCacheTests: XCTestCase {
     // MARK: - Helpers
 
     private func makePR(id: Int, number: Int, headSHA: String = "abc123") -> PullRequest {
-        let user = GitHubUser(id: 1, login: "user", avatarUrl: nil)
-        let repo = Repository(id: 1, name: "repo", fullName: "user/repo", owner: user)
+        let user = GitHubUser(login: "user")
+        let repo = Repository(name: "repo", fullName: "user/repo", owner: user)
         let head = GitRef(ref: "feature", sha: headSHA, repo: repo)
         let base = GitRef(ref: "main", sha: "base", repo: repo)
         return PullRequest(
             id: id, number: number, title: "PR #\(number)", body: nil,
-            state: "open", htmlUrl: "https://example.com", user: user,
+            state: "open", user: user,
             head: head, base: base,
             createdAt: Date(), updatedAt: Date()
         )
     }
 
     private func makeSnapshot(prId: Int, prNumber: Int, headSHA: String = "abc123") -> PRSnapshot {
-        let pr = makePR(id: prId, number: prNumber, headSHA: headSHA)
         return PRSnapshot(
-            pullRequest: pr,
             fileDiffs: [FileDiff(filename: "test.swift", status: .modified, hunks: [], additions: 1, deletions: 0)],
             comments: [],
             issueComments: [],
             reviewThreads: [],
             minimizedCommentIds: Set(),
             checkRunsStatus: nil,
-            branchComparison: nil,
-            headSHA: headSHA,
-            savedAt: Date()
+            branchComparison: nil
         )
     }
 
@@ -72,9 +68,7 @@ final class PRDiskCacheTests: XCTestCase {
         let loaded = await cache.loadSnapshot(for: 42)
 
         XCTAssertNotNil(loaded)
-        XCTAssertEqual(loaded?.pullRequest.id, 42)
         XCTAssertEqual(loaded?.fileDiffs.count, 1)
-        XCTAssertEqual(loaded?.headSHA, "abc123")
     }
 
     func testSnapshot_loadMissing_returnsNil() async {
@@ -90,7 +84,7 @@ final class PRDiskCacheTests: XCTestCase {
         try await cache.saveSnapshot(snapshot2, for: 42)
 
         let loaded = await cache.loadSnapshot(for: 42)
-        XCTAssertEqual(loaded?.headSHA, "second")
+        XCTAssertEqual(loaded?.fileDiffs.count, 1)
     }
 
     // MARK: - Delete Tests

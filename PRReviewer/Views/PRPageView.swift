@@ -8,7 +8,6 @@ struct PRPageView: View {
         TabView(selection: $viewModel.selectedPRIndex) {
             ForEach(Array(viewModel.pullRequests.enumerated()), id: \.element.id) { index, pr in
                 PRDetailContainerView(
-                    pullRequest: pr,
                     detailViewModel: detailViewModelStore.viewModel(for: pr),
                     isVisible: viewModel.selectedPRIndex == index
                 )
@@ -34,22 +33,9 @@ class PRDetailViewModelStore: ObservableObject {
         return vm
     }
 
-    func invalidate(prId: Int) {
-        viewModels.removeValue(forKey: prId)
-    }
-
-    func invalidateAll() {
-        viewModels.removeAll()
-    }
-}
-
-enum PRViewMode {
-    case description
-    case code
 }
 
 struct PRDetailContainerView: View {
-    let pullRequest: PullRequest
     var navigationTarget: NotificationTarget?
     var onBack: (() -> Void)?
     var onNavigationComplete: (() -> Void)?
@@ -58,8 +44,7 @@ struct PRDetailContainerView: View {
     @State private var showFullDiff = false
     @State private var hasTriggeredLoad = false
 
-    init(pullRequest: PullRequest, detailViewModel: PRDetailViewModel, isVisible: Bool = true, navigationTarget: NotificationTarget? = nil, onBack: (() -> Void)? = nil, onNavigationComplete: (() -> Void)? = nil) {
-        self.pullRequest = pullRequest
+    init(detailViewModel: PRDetailViewModel, isVisible: Bool = true, navigationTarget: NotificationTarget? = nil, onBack: (() -> Void)? = nil, onNavigationComplete: (() -> Void)? = nil) {
         self.detailViewModel = detailViewModel
         self.isVisible = isVisible
         self.navigationTarget = navigationTarget
@@ -357,158 +342,6 @@ struct AddGeneralCommentSheet: View {
             }
         }
         .preferredColorScheme(.dark)
-    }
-}
-
-struct PRDetailTopBar: View {
-    let pr: PullRequest
-    @Binding var viewMode: PRViewMode
-    var onBack: (() -> Void)?
-
-    var body: some View {
-        HStack {
-            // Back button
-            if let onBack = onBack {
-                Button {
-                    onBack()
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                        Text("PRs")
-                    }
-                    .font(.subheadline)
-                    .foregroundColor(GruvboxColors.aquaLight)
-                }
-            }
-
-            Spacer()
-
-            // View mode toggle
-            HStack(spacing: 0) {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        viewMode = .description
-                    }
-                } label: {
-                    Text("Info")
-                        .font(.caption.weight(.medium))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(viewMode == .description ? GruvboxColors.bg3 : Color.clear)
-                        .foregroundColor(viewMode == .description ? GruvboxColors.fg0 : GruvboxColors.fg4)
-                }
-
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        viewMode = .code
-                    }
-                } label: {
-                    Text("Code")
-                        .font(.caption.weight(.medium))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(viewMode == .code ? GruvboxColors.bg3 : Color.clear)
-                        .foregroundColor(viewMode == .code ? GruvboxColors.fg0 : GruvboxColors.fg4)
-                }
-            }
-            .background(GruvboxColors.bg1)
-            .cornerRadius(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(GruvboxColors.bg3, lineWidth: 1)
-            )
-
-            Spacer()
-
-            // PR number
-            Text("#\(pr.number)")
-                .font(.caption.monospaced())
-                .foregroundColor(GruvboxColors.fg4)
-        }
-        .padding(.horizontal)
-        .padding(.top, 8)
-        .padding(.bottom, 4)
-        .background(GruvboxColors.bg0.opacity(0.95))
-    }
-}
-
-struct PRDescriptionView: View {
-    let pr: PullRequest
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(pr.repositoryFullName)
-                        .font(.subheadline)
-                        .foregroundColor(GruvboxColors.aquaLight)
-
-                    Text(pr.title)
-                        .font(.title2.weight(.semibold))
-                        .foregroundColor(GruvboxColors.fg0)
-
-                    HStack {
-                        StatusBadge(state: pr.state)
-
-                        Text("by \(pr.user.login)")
-                            .font(.caption)
-                            .foregroundColor(GruvboxColors.fg3)
-
-                        Spacer()
-
-                        Text(pr.createdAt, style: .date)
-                            .font(.caption)
-                            .foregroundColor(GruvboxColors.fg4)
-                    }
-
-                    // Branch info
-                    HStack(spacing: 4) {
-                        Image(systemName: "arrow.triangle.branch")
-                        Text(pr.head.ref)
-                            .lineLimit(1)
-                        Image(systemName: "arrow.right")
-                        Text(pr.base.ref)
-                            .lineLimit(1)
-                    }
-                    .font(.caption.monospaced())
-                    .foregroundColor(GruvboxColors.purpleLight)
-                }
-                .padding()
-                .background(GruvboxColors.bg1)
-                .cornerRadius(12)
-
-                // Description (Markdown rendered)
-                if let body = pr.body, !body.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Description")
-                            .font(.headline)
-                            .foregroundColor(GruvboxColors.fg2)
-
-                        MarkdownTextView(markdown: body)
-                    }
-                    .padding()
-                    .background(GruvboxColors.bg1)
-                    .cornerRadius(12)
-                } else {
-                    VStack(spacing: 12) {
-                        Image(systemName: "doc.text")
-                            .font(.system(size: 32))
-                            .foregroundColor(GruvboxColors.fg4)
-                        Text("No description provided")
-                            .font(.callout)
-                            .foregroundColor(GruvboxColors.fg4)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 40)
-                    .background(GruvboxColors.bg1)
-                    .cornerRadius(12)
-                }
-            }
-            .padding()
-            .padding(.top, 50) // Space for top bar
-        }
-        .background(GruvboxColors.bg0)
     }
 }
 

@@ -1,0 +1,5 @@
+project: PRReviewer.xcodeproj
+schemes:
+  - PRReviewer
+targets:
+  - PRReviewer

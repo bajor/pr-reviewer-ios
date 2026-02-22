@@ -19,7 +19,7 @@ final class PRSnapshotTests: XCTestCase {
 
     func testFileDiff_encodeDecode_preservesData() throws {
         let line = DiffLine(type: .addition, content: "+hello", oldLineNumber: nil, newLineNumber: 5)
-        let hunk = DiffHunk(header: "@@ -1,3 +1,4 @@", oldStart: 1, oldCount: 3, newStart: 1, newCount: 4, lines: [line])
+        let hunk = DiffHunk(header: "@@ -1,3 +1,4 @@", lines: [line])
         let diff = FileDiff(filename: "test.swift", status: .modified, hunks: [hunk], additions: 1, deletions: 0)
 
         let data = try encoder.encode(diff)
@@ -61,26 +61,24 @@ final class PRSnapshotTests: XCTestCase {
     }
 
     func testCheckRunsStatus_encodeDecode_preservesData() throws {
-        let status = CheckRunsStatus(total: 5, completed: 4, successful: 3, failed: 1, pending: 1)
+        let status = CheckRunsStatus(total: 5, successful: 3, failed: 1, pending: 1)
 
         let data = try encoder.encode(status)
         let decoded = try decoder.decode(CheckRunsStatus.self, from: data)
 
         XCTAssertEqual(decoded.total, 5)
-        XCTAssertEqual(decoded.completed, 4)
         XCTAssertEqual(decoded.successful, 3)
         XCTAssertEqual(decoded.failed, 1)
         XCTAssertEqual(decoded.pending, 1)
     }
 
     func testBranchComparison_encodeDecode_preservesData() throws {
-        let comparison = BranchComparison(status: "behind", aheadBy: 0, behindBy: 3)
+        let comparison = BranchComparison(status: "behind", behindBy: 3)
 
         let data = try encoder.encode(comparison)
         let decoded = try decoder.decode(BranchComparison.self, from: data)
 
         XCTAssertEqual(decoded.status, "behind")
-        XCTAssertEqual(decoded.aheadBy, 0)
         XCTAssertEqual(decoded.behindBy, 3)
         XCTAssertTrue(decoded.isBehind)
     }
@@ -95,26 +93,10 @@ final class PRSnapshotTests: XCTestCase {
     }
 
     func testPRSnapshot_encodeDecode_preservesAllFields() throws {
-        let user = GitHubUser(id: 1, login: "testuser", avatarUrl: "https://example.com/avatar")
-        let repo = Repository(id: 100, name: "testrepo", fullName: "testuser/testrepo", owner: user)
-        let head = GitRef(ref: "feature-branch", sha: "abc123", repo: repo)
-        let base = GitRef(ref: "main", sha: "def456", repo: repo)
-        let pr = PullRequest(
-            id: 1,
-            number: 42,
-            title: "Test PR",
-            body: "Description",
-            state: "open",
-            htmlUrl: "https://github.com/test/repo/pull/42",
-            user: user,
-            head: head,
-            base: base,
-            createdAt: Date(timeIntervalSince1970: 1000000),
-            updatedAt: Date(timeIntervalSince1970: 1000001)
-        )
+        let user = GitHubUser(login: "testuser")
 
         let line = DiffLine(type: .deletion, content: "-removed", oldLineNumber: 10, newLineNumber: nil)
-        let hunk = DiffHunk(header: "@@ -10,1 +10,0 @@", oldStart: 10, oldCount: 1, newStart: 10, newCount: 0, lines: [line])
+        let hunk = DiffHunk(header: "@@ -10,1 +10,0 @@", lines: [line])
         let diff = FileDiff(filename: "file.swift", status: .modified, hunks: [hunk], additions: 0, deletions: 1)
 
         let comment = PRComment(
@@ -125,43 +107,33 @@ final class PRSnapshotTests: XCTestCase {
             path: "file.swift",
             line: 10,
             side: "RIGHT",
-            commitId: "abc123",
-            createdAt: Date(timeIntervalSince1970: 1000002),
-            updatedAt: Date(timeIntervalSince1970: 1000003)
+            createdAt: Date(timeIntervalSince1970: 1000002)
         )
 
         let issueComment = IssueComment(
             id: 200,
-            nodeId: "IC_abc",
             body: "Looks good",
             user: user,
-            createdAt: Date(timeIntervalSince1970: 1000004),
-            updatedAt: Date(timeIntervalSince1970: 1000005)
+            createdAt: Date(timeIntervalSince1970: 1000004)
         )
 
         let thread = ReviewThread(id: "PRRT_1", isResolved: false, viewerCanResolve: true, viewerCanUnresolve: false, commentIds: [100])
-        let checkRuns = CheckRunsStatus(total: 2, completed: 2, successful: 2, failed: 0, pending: 0)
-        let branchComp = BranchComparison(status: "identical", aheadBy: 0, behindBy: 0)
+        let checkRuns = CheckRunsStatus(total: 2, successful: 2, failed: 0, pending: 0)
+        let branchComp = BranchComparison(status: "identical", behindBy: 0)
 
         let snapshot = PRSnapshot(
-            pullRequest: pr,
             fileDiffs: [diff],
             comments: [comment],
             issueComments: [issueComment],
             reviewThreads: [thread],
             minimizedCommentIds: Set([50, 51]),
             checkRunsStatus: checkRuns,
-            branchComparison: branchComp,
-            headSHA: "abc123",
-            savedAt: Date(timeIntervalSince1970: 2000000)
+            branchComparison: branchComp
         )
 
         let data = try encoder.encode(snapshot)
         let decoded = try decoder.decode(PRSnapshot.self, from: data)
 
-        XCTAssertEqual(decoded.pullRequest.id, 1)
-        XCTAssertEqual(decoded.pullRequest.number, 42)
-        XCTAssertEqual(decoded.pullRequest.title, "Test PR")
         XCTAssertEqual(decoded.fileDiffs.count, 1)
         XCTAssertEqual(decoded.fileDiffs[0].filename, "file.swift")
         XCTAssertEqual(decoded.fileDiffs[0].hunks[0].lines[0].type, .deletion)
@@ -174,45 +146,22 @@ final class PRSnapshotTests: XCTestCase {
         XCTAssertEqual(decoded.minimizedCommentIds, Set([50, 51]))
         XCTAssertEqual(decoded.checkRunsStatus?.total, 2)
         XCTAssertEqual(decoded.branchComparison?.status, "identical")
-        XCTAssertEqual(decoded.headSHA, "abc123")
     }
 
     func testPRSnapshot_withNilOptionals_roundTrips() throws {
-        let user = GitHubUser(id: 2, login: "user", avatarUrl: nil)
-        let repo = Repository(id: 200, name: "repo", fullName: "user/repo", owner: user)
-        let head = GitRef(ref: "branch", sha: "aaa", repo: repo)
-        let base = GitRef(ref: "main", sha: "bbb", repo: repo)
-        let pr = PullRequest(
-            id: 2,
-            number: 1,
-            title: "PR",
-            body: nil,
-            state: "open",
-            htmlUrl: "https://example.com",
-            user: user,
-            head: head,
-            base: base,
-            createdAt: Date(timeIntervalSince1970: 0),
-            updatedAt: Date(timeIntervalSince1970: 0)
-        )
-
         let snapshot = PRSnapshot(
-            pullRequest: pr,
             fileDiffs: [],
             comments: [],
             issueComments: [],
             reviewThreads: [],
             minimizedCommentIds: Set(),
             checkRunsStatus: nil,
-            branchComparison: nil,
-            headSHA: "aaa",
-            savedAt: Date(timeIntervalSince1970: 0)
+            branchComparison: nil
         )
 
         let data = try encoder.encode(snapshot)
         let decoded = try decoder.decode(PRSnapshot.self, from: data)
 
-        XCTAssertEqual(decoded.pullRequest.id, 2)
         XCTAssertNil(decoded.checkRunsStatus)
         XCTAssertNil(decoded.branchComparison)
         XCTAssertTrue(decoded.fileDiffs.isEmpty)

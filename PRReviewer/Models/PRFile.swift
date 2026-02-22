@@ -8,11 +8,10 @@ struct PRFile: Codable, Identifiable, Equatable, Sendable {
     let status: FileStatus
     let additions: Int
     let deletions: Int
-    let changes: Int
     let patch: String?
 
     enum CodingKeys: String, CodingKey {
-        case sha, filename, status, additions, deletions, changes, patch
+        case sha, filename, status, additions, deletions, patch
     }
 }
 

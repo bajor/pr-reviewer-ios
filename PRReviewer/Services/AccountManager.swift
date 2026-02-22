@@ -86,11 +86,6 @@ class AccountManager: ObservableObject {
         !activeAccounts.isEmpty && activeAccounts.allSatisfy { KeychainManager.hasToken(for: $0.id) }
     }
 
-    // Get all usernames for active accounts (for PR search)
-    var activeUsernames: [String] {
-        activeAccounts.map { $0.username }
-    }
-
     func setSoundEnabled(_ enabled: Bool) {
         soundEnabled = enabled
         UserDefaults.standard.set(enabled, forKey: soundEnabledKey)
