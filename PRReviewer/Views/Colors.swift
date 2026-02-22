@@ -34,8 +34,8 @@ struct GruvboxColors {
     static let orangeLight = Color(red: 0.99, green: 0.52, blue: 0.15)  // #fe8019
 
     // Diff colors (dark backgrounds)
-    static let diffAdditionBg = Color(red: 0.08, green: 0.22, blue: 0.08)     // Dark green background
-    static let diffDeletionBg = Color(red: 0.28, green: 0.08, blue: 0.08)     // Dark red background
+    static let diffAdditionBg = Color(red: 0.176, green: 0.353, blue: 0.176)   // #2d5a2d
+    static let diffDeletionBg = Color(red: 0.353, green: 0.125, blue: 0.125)  // #5a2020
     static let diffContextBg = bg0
 
     // Comment colors
